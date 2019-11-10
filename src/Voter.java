@@ -8,16 +8,18 @@ public class Voter {
     //0 = plurality, 1 = voting for 2, 2 = anti-plurality (veto), 3 = borda
     private int votingStyle;
 
+    // set voter preference and voting style
     public Voter(char[] preferences, int votingStyle){
         this.preferences = preferences;
         this.votingStyle = votingStyle;
     }
-
+    //plurality voting?
     public Voter(int candidates, int votingStyle){
         this.votingStyle = votingStyle;
         randomizeCandicates(candidates);
     }
 
+    //create 
     private void randomizeCandicates(int candidates){
         ArrayList<Character> allCandidates = new ArrayList<>();
         for (int i = 0; i<candidates; i++){
@@ -86,6 +88,7 @@ public class Voter {
         return vote;
     }
 
+    
     private int[] borda(){
         int[] vote = new int[preferences.length];
         for (char i = 'a'; i < ('a'+preferences.length); i++){

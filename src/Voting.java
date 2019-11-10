@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+
 public class Voting {
     char[] candidates = {'a', 'b', 'c'};
     char[][] votingMatrix = {{'b', 'a', 'c'}, {'b', 'a', 'c'}, {'b', 'c', 'a'}};
     Voter[] voters = new Voter[votingMatrix.length];
     int votingStyle;
 
+    // set voting style 
     public Voting(int votingStyle){
         this.votingStyle = votingStyle;
         for (int i = 0; i < votingMatrix.length; i++){
@@ -31,6 +34,7 @@ public class Voting {
         }
         return winner;
     }
+    
 
     public static void main(String args[]){
         Voting v = new Voting(3);
