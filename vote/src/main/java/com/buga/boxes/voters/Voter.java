@@ -38,7 +38,9 @@ public class Voter {
     public int[] getVotingVector() { return votingVector; }
     public void setVotingVector(int[] votingVector) { this.votingVector = votingVector; }
 
-    // A class to package together Ranks and Scores. Useful for calculating voting result.
+    /**
+     * A class to package together Ranks and Scores. Useful for calculating voting result.
+     */
     static class RanksAndScores {
         int score;
         int index;
@@ -49,8 +51,12 @@ public class Voter {
         }
     }
 
-    // Implementation for getVotingResult. This will return the array of the ranks of the candidates.
-    // For example, for candidates with voting scores [5, 10, 7] will return [2, 0, 1]
+    /**
+     * Implementation for getVotingResult. This will return the array of the ranks of the candidates.
+     * For example, for candidates with voting scores [5, 10, 7] return [2, 0, 1]
+     * @param preferenceMatrix
+     * @return array of ranks.
+     */
     public int[] getVotingResult(int[][] preferenceMatrix) {
         var scores=new int[getNumberOfChoices()];
         for (var i = 0; i < preferenceMatrix.length; i++) {
@@ -69,7 +75,11 @@ public class Voter {
                 .toArray();
     }
 
-    // Implementation for getHappiness.
+    /**
+     * Implementation for getHappiness.
+     * @param finalResults
+     * @return the happiness value.
+     */
     public final float getHappiness(final int[] finalResults) {
         int distance=0;
         for(var i=0;i<getNumberOfChoices();i++){
