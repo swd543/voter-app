@@ -12,7 +12,10 @@ public class Main {
 
         var voters=new ArrayList<IVoter>();
         for(var i=0;i<numberOfVoters;i++){
-            IVoter voter=new TwoVoter(numberOfCandidates);
+            IVoter voter=new OneVoter(numberOfCandidates);
+//            IVoter voter=new TwoVoter(numberOfCandidates);
+//            IVoter voter=new VetoVoter(numberOfCandidates);
+//            IVoter voter=new BordaVoter(numberOfCandidates);
             voters.add(voter);
         }
 
