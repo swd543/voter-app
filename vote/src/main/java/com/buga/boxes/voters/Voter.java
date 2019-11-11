@@ -5,7 +5,13 @@ import com.buga.boxes.random.Randomizer;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * Voter is the base class which ALL voting schemes must derive from.
+ * Already includes definitions for getVotingResult and getHappiness, so unless radically different does not need to be reimplemented.
+ */
 public class Voter {
+
+    // The number of preferences the voter is allowed to choose from.
     private int numberOfChoices;
 
     // Hey, psst, also tell me your actual preferences :)
@@ -19,17 +25,20 @@ public class Voter {
         return "Hey, I'm voter "+hashCode()+" and my real preferences are " + Arrays.toString(realPreferences)+" but I chose "+Arrays.toString(votingVector);
     }
 
+    // Constructor for voter.
     public Voter(int numberOfChoices){
         this.numberOfChoices = numberOfChoices;
         this.realPreferences = Randomizer.fillRandomUnique(this.numberOfChoices);
         this.votingVector=new int[this.numberOfChoices];
     }
 
+    // Getters and setters
     public int getNumberOfChoices() { return numberOfChoices; }
     public int[] sayTheTruth() { return realPreferences; }
     public int[] getVotingVector() { return votingVector; }
     public void setVotingVector(int[] votingVector) { this.votingVector = votingVector; }
 
+    // A class to package together Ranks and Scores. Useful for calculating voting result.
     static class RanksAndScores {
         int score;
         int index;
@@ -40,6 +49,8 @@ public class Voter {
         }
     }
 
+    // Implementation for getVotingResult. This will return the array of the ranks of the candidates.
+    // For example, for candidates with voting scores [5, 10, 7] will return [2, 0, 1]
     public int[] getVotingResult(int[][] preferenceMatrix) {
         var scores=new int[getNumberOfChoices()];
         for (var i = 0; i < preferenceMatrix.length; i++) {
@@ -58,12 +69,12 @@ public class Voter {
                 .toArray();
     }
 
+    // Implementation for getHappiness.
     public final float getHappiness(final int[] finalResults) {
         int distance=0;
         for(var i=0;i<getNumberOfChoices();i++){
             distance+=(finalResults[i]-realPreferences[i])*realPreferences[i];
         }
-
         return 1/(1+Math.abs((float) distance));
     }
 }
