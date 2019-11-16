@@ -13,7 +13,8 @@ public class Voter {
         this.preferences = preferences;
         this.votingStyle = votingStyle;
     }
-    //plurality voting?
+
+    // constructor for random preferences
     public Voter(int candidates, int votingStyle){
         this.votingStyle = votingStyle;
         randomizeCandicates(candidates);
@@ -34,6 +35,7 @@ public class Voter {
         }
     }
 
+    // returns int array with amount of points for each candidate.
     public int[] getVote(){
         switch (votingStyle){
             case 0 : return plurality();
@@ -43,6 +45,7 @@ public class Voter {
         return borda();
     }
 
+    // returns one 1, all zero
     private int[] plurality(){
         char choice = preferences[0];
         int[] vote = new int[preferences.length];
@@ -53,12 +56,13 @@ public class Voter {
             else{
                 vote[i-'a']=0;
             }
-            System.out.print(vote[i - 'a']);
+            //System.out.print(vote[i - 'a']);
         }
-        System.out.println();
+        //System.out.println();
         return vote;
     }
 
+    // returns two 1, rest zero
     private int[] for2(){
         char choice1 = preferences[0];
         char choice2 = preferences[1];
@@ -74,6 +78,7 @@ public class Voter {
         return vote;
     }
 
+    // returns one 0, rest 1
     private int[] anti(){
         char notChoice = preferences[preferences.length-1];
         int[] vote = new int[preferences.length];
@@ -88,7 +93,7 @@ public class Voter {
         return vote;
     }
 
-    
+    // returns values from n-1 till 0
     private int[] borda(){
         int[] vote = new int[preferences.length];
         for (char i = 'a'; i < ('a'+preferences.length); i++){
@@ -103,4 +108,13 @@ public class Voter {
         return vote;
     }
 
+
+    //setters and getters for preferences.
+    public char[] getPref() {
+        return preferences;
+    }
+
+    public void setPreferences(char[] preferences) {
+        this.preferences = preferences;
+    }
 }
