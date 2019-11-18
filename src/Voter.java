@@ -117,4 +117,18 @@ public class Voter {
     public void setPreferences(char[] preferences) {
         this.preferences = preferences;
     }
+
+    //Returns the appropriate outcome applying bulletvoting
+    public int[] bulletVote(){
+        if (votingStyle == 3) {
+            int[] vote = plurality();
+            for (int i = 0; i<vote.length; i++){
+                vote[i] = vote[i]*(preferences.length -1);
+            }
+            return vote;
+        }
+        return plurality();
+    }
+
+
 }
