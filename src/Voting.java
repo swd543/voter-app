@@ -7,6 +7,7 @@ public class Voting {
     char[] candidates; //= {'a', 'b', 'c', 'd'};
     char[][] votingMatrix; //= {{'a', 'b', 'c', 'd'}, {'a','b', 'd', 'c', }, {'b', 'a', 'c', 'd'}};
     Voter[] voters; // = new Voter[votingMatrix.length];
+    boolean[] hasStratOption;
 
     //Amount of points each candidate gets. Important for finding votingOutcome. Gets set in vote()
     int [] points; //= new int[candidates.length];
@@ -28,6 +29,10 @@ public class Voting {
         points = new int[candidates.length];
         for (int i = 0; i < votingMatrix.length; i++){
             voters[i] = new Voter(votingMatrix[i], votingStyle);
+        }
+        hasStratOption = new boolean[voters.length];
+        for (int i = 0; i< hasStratOption.length; i++){
+            hasStratOption[i] = false;
         }
 
     }
@@ -207,8 +212,10 @@ public class Voting {
         ArrayList<StrategicVotingOption> votingOptions = new ArrayList<StrategicVotingOption>();
         for(int i = 0; i < voters.length; i++){
             ArrayList<StrategicVotingOption> smallList = strategicVotingOptions(i);
-            for (StrategicVotingOption option : smallList)
+            for (StrategicVotingOption option : smallList) {
                 votingOptions.add(option);
+                hasStratOption[i] = true;
+            }
 
         }
         return votingOptions;
@@ -309,10 +316,19 @@ public class Voting {
         }
         return s;
     }
+
+    public double getRisk(){
+        double stratOptions = 0;
+        for (int i = 0; i < hasStratOption.length; i++){
+            if (hasStratOption[i])
+                stratOptions++;
+        }
+        return stratOptions/(double)voters.length;
+    }
     
 
     public static void main(String args[]){
-        Voting v = new Voting(2);
+        Voting v = new Voting(3);
         //char[] candidates = askCandidates();
         //Voting v = new Voting(1, askVotingMatrix(candidates), candidates);
 
@@ -343,7 +359,8 @@ public class Voting {
             System.out.println();
         }
 
-        double risk = options.size()/ (double) v.voters.length;
+        //double risk = options.size()/ (double) v.voters.length;
+        double risk = v.getRisk();
         System.out.println("Risk is: " + risk);
 
     }
