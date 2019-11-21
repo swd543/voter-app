@@ -1,17 +1,15 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Voting {
+    static Scanner s = new Scanner(System.in);
 	ArrayList<Character> outCome=new ArrayList<Character>();
 
-    final char[] candidates = {'a', 'b', 'c', 'd'};
-    final char[][] votingMatrix = {{'a', 'b', 'c', 'd'}, {'a','b', 'd', 'c', }, {'b', 'a', 'c', 'd'}};
-    Voter[] voters = new Voter[votingMatrix.length];
+    char[] candidates; //= {'a', 'b', 'c', 'd'};
+    char[][] votingMatrix; //= {{'a', 'b', 'c', 'd'}, {'a','b', 'd', 'c', }, {'b', 'a', 'c', 'd'}};
+    Voter[] voters; // = new Voter[votingMatrix.length];
 
     //Amount of points each candidate gets. Important for finding votingOutcome. Gets set in vote()
-    int [] points = new int[candidates.length];
+    int [] points; //= new int[candidates.length];
 
     //The order in which the candidates would be chosen. Important for calculating happiness. Gets set in vote()
     ArrayList<Character> votingOutcome = new ArrayList<Character>();
@@ -22,9 +20,27 @@ public class Voting {
     // set voting style 
     public Voting(int votingStyle){
         this.votingStyle = votingStyle;
+
+        candidates = new char[]{'a', 'b', 'c', 'd', 'e'};
+        votingMatrix = new char[][]{{'d', 'e', 'a', 'b', 'c'}, {'d', 'e', 'c', 'b', 'a'}, {'a', 'e', 'd', 'b', 'c'}, {'e', 'a', 'b', 'c', 'd'}};
+
+        voters = new Voter[votingMatrix.length];
+        points = new int[candidates.length];
         for (int i = 0; i < votingMatrix.length; i++){
             voters[i] = new Voter(votingMatrix[i], votingStyle);
         }
+
+    }
+
+    public Voting(int votingStyle, char[][] votingMatrix, char[] candidates){
+        this.votingStyle = votingStyle;
+        this.votingMatrix = votingMatrix;
+        this.candidates = candidates;
+        voters = new Voter[votingMatrix.length];
+        for (int i = 0; i < votingMatrix.length; i++){
+            voters[i] = new Voter(votingMatrix[i], votingStyle);
+        }
+        points = new int[candidates.length];
     }
 
     //return the winner
@@ -79,15 +95,16 @@ public class Voting {
     //Method that only handles strategic votes, and does not change any global variables.
     //Returns the voting outcome you would get with the changed preference.
     //Applies bulletvoting if int bulletVoter is between 0-n.
-    public ArrayList<Character> strategicVote(int bulletVoter){
+    public ArrayList<Character> strategicVote(int bulletVoter, int k){
         int[][] votes = new int[voters.length][votingMatrix[0].length];
         int[] tempPoints = new int[points.length];
         ArrayList<Character> tempVotingOutcome = new ArrayList<>();
         for (int i = 0; i < voters.length; i++){
             if (bulletVoter == i){
-                votes[i] = voters[i].bulletVote();
+                votes[i] = voters[i].bulletVote(k);
+            } else {
+                votes[i] = voters[i].getVote();
             }
-            votes[i] = voters[i].getVote();
         }
         int maxPoints = 0;
         for (int i = 0; i <candidates.length; i++){
@@ -136,6 +153,16 @@ public class Voting {
 
     //calculate the happiness
     //Doubled, to be able to deal with Arraylists and char[]
+    public double calcHappiness(ArrayList<Character> outcome, char[] pref){
+        double distance = 0;
+        for (int i = 0; i < outcome.size(); i++){
+            distance += (i - outcome.indexOf(pref[i]))*(outcome.size()-i) ;
+        }
+        //System.out.print(distance +" hi ");
+        return (1/(1+Math.abs(distance)));
+
+    }
+
     public double calcHappins(ArrayList<Character> LAllpref,ArrayList<Character> pref) {
 		int result=0;
 		double retu;
@@ -203,8 +230,9 @@ public class Voting {
                 voters[i].setPreferences(newPref);
 
                 //Vote, see what the result is
-                ArrayList<Character> tempOutcome = strategicVote(-1);
+                ArrayList<Character> tempOutcome = strategicVote(-1, -1);
                 double tempHap = calcHappins(tempOutcome, currentPref);
+                //System.out.println(i + " " + tempHap + " " + calcHappiness(tempOutcome,currentPref) + printArray(newPref));
 
                 //If the resulting happiness is higher than original, save as strategic voting option
                 if (tempHap > currentHap) {
@@ -215,47 +243,34 @@ public class Voting {
                     options.add(option);
                 }
             }
-            for (int k = 0; k<j; k++){
-                //Bury
-                newPref = bury(getNewPref(currentPref), j, k);
-                voters[i].setPreferences(newPref);
+
+        }
+        //Bulletvoting
+        if(!(votingStyle == 0)){
+            //Try bulletvoting for all candidates but the last one
+
+            for (int j = 0; j < voters[i].bulletVotes.length; j++){
+                //Make bulletvote preference array.
+                //Not used in code, only used to safe in Strategic Voting option
+                char[] bulletVote = new char[candidates.length];
+                bulletVote[0] = currentPref[j];
+                for (int k = 1; k <currentPref.length; k++){
+                    bulletVote[k] = '-';
+                }
+                voters[i].setPreferences(bulletVote);
 
                 //Vote, see what the result is
-                ArrayList<Character> tempOutcome = strategicVote(-1);
+                ArrayList<Character> tempOutcome = strategicVote(i, j);
                 double tempHap = calcHappins(tempOutcome, currentPref);
 
                 //If the resulting happiness is higher than original, save as strategic voting option
                 if (tempHap > currentHap) {
                     StrategicVotingOption option = new StrategicVotingOption(i);
-                    option.changedPreference = getNewPref(newPref);
+                    option.changedPreference = getNewPref(bulletVote);
                     option.votingOutcome = tempOutcome;
-                    option.explanation = ("Because " + tempOutcome + " is prefered over " + votingOutcome + " with an increased happiness of " + (tempHap - currentHap) + ", applying burying.");
+                    option.explanation = ("Because " + tempOutcome + " is prefered over " + votingOutcome + " with an increased happiness of " + (tempHap - currentHap) + ", applying bulletvoting." );
                     options.add(option);
                 }
-            }
-        }
-        //Bulletvoting
-        if(votingStyle == 3 || votingStyle == 1){
-            //Make bulletvote preference array.
-            //Not used in code, only used to safe in Strategic Voting option
-            char[] bulletVote = new char[candidates.length];
-            bulletVote[0] = currentPref[0];
-            for (int j = 1; j <currentPref.length; j++){
-                bulletVote[j] = '-';
-            }
-            voters[i].setPreferences(bulletVote);
-
-            //Vote, see what the result is
-            ArrayList<Character> tempOutcome = strategicVote(i);
-            double tempHap = calcHappins(tempOutcome, currentPref);
-
-            //If the resulting happiness is higher than original, save as strategic voting option
-            if (tempHap > currentHap) {
-                StrategicVotingOption option = new StrategicVotingOption(i);
-                option.changedPreference = getNewPref(bulletVote);
-                option.votingOutcome = tempOutcome;
-                option.explanation = ("Because " + tempOutcome + " is prefered over " + votingOutcome + " with an increased happiness of " + (tempHap - currentHap) + ", applying bulletvoting." );
-                options.add(option);
             }
         }
 
@@ -271,24 +286,12 @@ public class Voting {
     public char[] compromise(char[] pref, int highPosition, int lowPosition){
         if(highPosition<lowPosition) {
             char temp = pref[lowPosition];
-            for (; lowPosition > highPosition; lowPosition--) {
-                pref[lowPosition] = pref[lowPosition - 1];
-            }
+            pref[lowPosition] = pref[highPosition];
             pref[highPosition] = temp;
         }
         return pref;
     }
 
-    public char[] bury(char[] pref, int highPosition, int lowPosition){
-        if(highPosition<lowPosition){
-            char temp = pref[highPosition];
-            for (; highPosition < lowPosition; highPosition++){
-                pref[highPosition] = pref[highPosition +1];
-            }
-            pref[lowPosition] = temp;
-        }
-        return pref;
-    }
 
     //Method to copy char arrays
     public char[] getNewPref(char[] cur){
@@ -298,10 +301,20 @@ public class Voting {
         }
         return newPref;
     }
+
+    public String printArray(char[] c){
+        String s = "";
+        for (char ch : c){
+            s += " " + ch;
+        }
+        return s;
+    }
     
 
     public static void main(String args[]){
-        Voting v = new Voting(1);
+        Voting v = new Voting(2);
+        //char[] candidates = askCandidates();
+        //Voting v = new Voting(1, askVotingMatrix(candidates), candidates);
 
 
 
@@ -333,6 +346,36 @@ public class Voting {
         double risk = options.size()/ (double) v.voters.length;
         System.out.println("Risk is: " + risk);
 
+    }
+
+    public static char[][] askVotingMatrix(char[] candidates){
+        System.out.println("How many voters? ");
+        int amount = s.nextInt();
+        char[][] votingMatrix = new char[amount][candidates.length];
+        for (int i = 0 ; i < amount; i ++){
+            ArrayList<Character> list = new ArrayList<>();
+            for (int j = 0; j < candidates.length; j++){
+                char in;
+                do {
+                    System.out.println("Please give the number " + j + " preference, between " + candidates[0] + " and "+ candidates[candidates.length-1]);
+                    in = s.next().charAt(0);
+                } while ((in - 'a' <0 && in - 'a' >=candidates.length && !list.contains(in)));
+                votingMatrix[i][j] = in;
+                list.add(in);
+            }
+        }
+        return votingMatrix;
+    }
+
+
+    public static char[] askCandidates(){
+        System.out.println("How many candidates?");
+        int amount = s.nextInt();
+        char[] candidates = new char[amount];
+        for (int i = 0; i < amount; i++){
+            candidates[i] = (char) ('a' + i);
+        }
+        return candidates;
     }
 
 }

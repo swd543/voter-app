@@ -4,6 +4,7 @@ import java.util.Random;
 public class Voter {
     Random r = new Random();
     private char[] preferences;
+    int[][] bulletVotes;
 
     //0 = plurality, 1 = voting for 2, 2 = anti-plurality (veto), 3 = borda
     private int votingStyle;
@@ -12,12 +13,14 @@ public class Voter {
     public Voter(char[] preferences, int votingStyle){
         this.preferences = preferences;
         this.votingStyle = votingStyle;
+        initBulletVote();
     }
 
     // constructor for random preferences
     public Voter(int candidates, int votingStyle){
         this.votingStyle = votingStyle;
         randomizeCandicates(candidates);
+        initBulletVote();
     }
 
     //create 
@@ -119,16 +122,40 @@ public class Voter {
     }
 
     //Returns the appropriate outcome applying bulletvoting
-    public int[] bulletVote(){
-        if (votingStyle == 3) {
-            int[] vote = plurality();
-            for (int i = 0; i<vote.length; i++){
-                vote[i] = vote[i]*(preferences.length -1);
+    public void initBulletVote() {
+        if (votingStyle > 0) {
+            int [][] votes;
+            if (votingStyle == 1){
+                votes = new int[2][preferences.length];
+            } else {
+                votes = new int[preferences.length - 1][preferences.length];
             }
-            return vote;
+            int[] vote = anti();
+            for (int i = 0; i < votes.length; i++) {
+                for (int j = 0; j < votes[0].length; j++) {
+                    votes[i][j] = 0;
+                }
+            }
+            int times = 1;
+            if (votingStyle > 2) {
+                times = preferences.length - 1;
+            }
+            int minus = 0;
+            int count = 0;
+            for (int i = 0; (i < vote.length && count < 2); i++) {
+                if (vote[i] == 1) {
+                    votes[i - minus][i] = times;
+                    count++;
+                } else {
+                    minus = minus + 1;
+                }
+
+            }
+            bulletVotes = votes;
         }
-        return plurality();
     }
 
-
+    public int[] bulletVote(int k) {
+        return bulletVotes[k];
+    }
 }
