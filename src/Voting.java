@@ -246,7 +246,7 @@ public class Voting {
                     StrategicVotingOption option = new StrategicVotingOption(i);
                     option.changedPreference = getNewPref(newPref);
                     option.votingOutcome = tempOutcome;
-                    option.explanation = ("Because " + tempOutcome + " is prefered over " + votingOutcome + " with an increased happiness of " + (tempHap - currentHap) + ", applying compromising.");
+                    option.explanation = ("Because " + tempOutcome + " is prefered over " + votingOutcome + " which increased happiness by " + (tempHap - currentHap) + ", applying compromising.");
                     options.add(option);
                 }
             }
