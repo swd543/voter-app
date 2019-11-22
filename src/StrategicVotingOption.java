@@ -14,7 +14,6 @@ public class StrategicVotingOption {
         voter = i;
     }
 
-
     @Override
     public String toString() {
         return ("Voter " + voter + " has the changed preference " + arrayChar() + " which leads to outcome: " +votingOutcome + ".\n"
