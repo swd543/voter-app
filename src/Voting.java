@@ -332,9 +332,9 @@ public class Voting {
     
 
     public static void main(String args[]){
-        Voting v = new Voting(3);
-        //char[] candidates = askCandidates();
-        //Voting v = new Voting(1, askVotingMatrix(candidates), candidates);
+        Voting v = new Voting(3);                                                     //Standard input
+        //char[] candidates = askCandidates();                                            //Command-line
+        //Voting v = new Voting(3, askVotingMatrix(candidates), candidates);   // input
 
 
 
