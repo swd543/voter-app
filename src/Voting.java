@@ -46,6 +46,10 @@ public class Voting {
             voters[i] = new Voter(votingMatrix[i], votingStyle);
         }
         points = new int[candidates.length];
+        hasStratOption = new boolean[voters.length];
+        for (int i = 0; i< hasStratOption.length; i++){
+            hasStratOption[i] = false;
+        }
     }
 
     //return the winner
