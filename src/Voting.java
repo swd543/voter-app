@@ -53,9 +53,9 @@ public class Voting {
     }
 
     //return the winner
-    //Sets global varialbes like votingOutcome and points
+    //Sets global variables like votingOutcome and points
     public char vote(){
-    	Map<Integer,Character> sortVote = new HashMap <Integer,Character>();
+    	//Map<Integer,Character> sortVote = new HashMap <Integer,Character>();
         int[][] votes = new int[voters.length][votingMatrix[0].length];
         for (int i = 0; i < voters.length; i++){
             votes[i] = voters[i].getVote();
@@ -73,7 +73,7 @@ public class Voting {
                 maxPoints = currentPoints;
             }
             
-            sortVote.put( currentPoints,candidates[i]);
+            //sortVote.put( currentPoints,candidates[i]);
         }
 
         //generates the outcome as a char array in the right order
@@ -89,11 +89,11 @@ public class Voting {
         }
 
         // sortVote represent the point calculated for borda
-        for (Map.Entry<Integer,Character> entry : sortVote.entrySet()) {
-        	outCome.add(entry.getValue());
+        //for (Map.Entry<Integer,Character> entry : sortVote.entrySet()) {
+        //	outCome.add(entry.getValue());
 	        //System.out.println(entry.getKey() + " -> " + entry.getValue());
 	        
-	    }
+	    //}
 
 
         
@@ -197,16 +197,6 @@ public class Voting {
         return retu;
     }
 
-    //this exchange position to make easier the calculation of happiness
-    // It reverses the preference list
-    public ArrayList<Character> setPosPref(char[] input) {
-    	ArrayList<Character> result=new ArrayList<Character>();
-    	for(int i=input.length-1;i>-1;i--) {
-    		result.add(input[i]);
-    	}
-    	return result;
-    	
-    }
 
     //Now, for the strategic voting outcomes
 
@@ -243,7 +233,6 @@ public class Voting {
                 //Vote, see what the result is
                 ArrayList<Character> tempOutcome = strategicVote(-1, -1);
                 double tempHap = calcHappins(tempOutcome, currentPref);
-                //System.out.println(i + " " + tempHap + " " + calcHappiness(tempOutcome,currentPref) + printArray(newPref));
 
                 //If the resulting happiness is higher than original, save as strategic voting option
                 if (tempHap > currentHap) {
@@ -332,21 +321,17 @@ public class Voting {
     
 
     public static void main(String args[]){
-        Voting v = new Voting(3);                                                     //Standard input
-        //char[] candidates = askCandidates();                                            //Command-line
+        Voting v = new Voting(3);                                   //Standard input
+
+        //char[] candidates = askCandidates();                                 //Command-line
         //Voting v = new Voting(3, askVotingMatrix(candidates), candidates);   // input
 
-
+        //char[] candidates = new char[]{'a', 'b', 'c', 'd', 'e'};
+        //char[][] matrix = new char[][]{{'d', 'e', 'a', 'b', 'c'}, {'d', 'e', 'c', 'b', 'a'}, {'a', 'e', 'd', 'b', 'c'}, {'e', 'a', 'b', 'c', 'd'}};
+        //Voting v = new Voting(3, matrix, candidates);                         //Own input
 
         System.out.println("Winner : "+v.vote());
-        
-        //ArrayList<Character> lol=v.setPosPref(v.votingMatrix[0]);
-        //for(char a:lol)
-        //System.out.println(a);
         System.out.println(v.votingOutcome);
-        /*for(char[] pref:v.votingMatrix) {
-        	System.out.println(v.calcHappins(v.outCome, v.setPosPref(pref)));
-        }*/
 
         double totalHap =0;
         for(char[] pref: v.votingMatrix) {
@@ -363,12 +348,13 @@ public class Voting {
             System.out.println();
         }
 
-        //double risk = options.size()/ (double) v.voters.length;
         double risk = v.getRisk();
         System.out.println("Risk is: " + risk);
 
     }
 
+
+    //Methods used to give input in the command line
     public static char[][] askVotingMatrix(char[] candidates){
         System.out.println("How many voters? ");
         int amount = s.nextInt();
